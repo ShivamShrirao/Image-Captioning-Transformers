@@ -83,11 +83,11 @@ class CaptionModel(nn.Module):
         return x
 
 
-    def decode_text(self, x, tgt, tgt_mask=None, tgt_key_padding_mask=None):
+    def decode_text(self, tgt, memory, tgt_mask=None, tgt_key_padding_mask=None):
         # Generate Captions
         tgt = self.pos_enc(self.tok_emb(tgt))
         # (seq_len, B, d_model)
-        x = self.decoder(tgt, memory=x, tgt_mask=tgt_mask, tgt_key_padding_mask=tgt_key_padding_mask)
+        x = self.decoder(tgt, memory=memory, tgt_mask=tgt_mask, tgt_key_padding_mask=tgt_key_padding_mask)
         # (seq_len, B, d_model)
         return x
 
@@ -95,7 +95,7 @@ class CaptionModel(nn.Module):
     def forward(self, x, tgt, tgt_mask=None, tgt_key_padding_mask=None):   # x[B,C,H,W] , tgt[seq_len, B].type(long)
         x = self.encode_image(x)
         # (h*w, B, d_model)
-        x = self.decode_text(x, tgt, tgt_mask, tgt_key_padding_mask)
+        x = self.decode_text(tgt, x, tgt_mask, tgt_key_padding_mask)
         # (seq_len, B, d_model)
         x = self.generator(x)
         # (seq_len, B, vocab_size)
