@@ -7,6 +7,7 @@ import math
 
 from .utils import *
 
+
 class TokenEmbedding(nn.Module):
     def __init__(self, vocab_size, emb_size):
         super().__init__()
@@ -72,7 +73,7 @@ class CaptionModel(nn.Module):
 
     def encode_image(self, x):
         # Extract Image Features
-        x = self.encoder(x)                 # We can precalculate the the features and store them, I just don't have enough space to store, they will be 20-30+ GB.
+        x = self.encoder(x)                 # We can precalculate the the features and store them, I just don't have enough space to store on colab, they will be 20-30+ GB.
         # (B, features, h, w)
         x = x.flatten(-2)    # flatten each feature
         # (B, features, h*w)
