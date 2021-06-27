@@ -2,7 +2,6 @@ import torch
 import torchtext
 import torchvision
 
-from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms as T
 from torchvision.io import read_file, decode_jpeg, ImageReadMode
@@ -10,6 +9,7 @@ from torchtext.vocab import build_vocab_from_iterator
 
 import os
 import numpy as np
+from tqdm import tqdm
 
 
 input_size = 224
