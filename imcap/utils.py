@@ -26,4 +26,19 @@ def subsequent_mask(sz, device):
     return mask
 
 def padding_mask(tgt, pad_idx):
-    return (tgt==pad_idx).transpose(0,1)
+    return (tgt==pad_idx).transpose(0,1)        # transpose for seq_len first, batch
+
+
+class AverageMeter:
+    def __init__(self, name=None):
+        self.name = name
+        self.reset()
+
+    def reset(self):
+        self.sum = self.count = self.avg = self.val = 0
+
+    def update(val, n=1):
+        self.val = val
+        self.sum += val * n
+        self.count += n
+        self.avg = self.sum / self.count
