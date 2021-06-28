@@ -229,7 +229,6 @@ def generate_caption(model, img, tgt_vocab):
 
 """# Begin Training"""
 
-init_epoch = 1
 NUM_EPOCHS = CONFIG["NUM_EPOCHS"]
 
 import gc
@@ -240,6 +239,7 @@ import glob
 val_paths = glob.glob(DATA_DIR+"/val2017/*")
 
 def main():
+    init_epoch = 1
     #collapse-output
     for epoch in range(init_epoch, NUM_EPOCHS+1):
         train_loss = train_epoch(model, train_loader, optimizer, scaler, scheduler,
@@ -255,7 +255,7 @@ def main():
         # if not epoch%10:
         #     save_model(model, optimizer, epoch)
 
-    init_epoch = epoch
+    return epoch
 
 def save_model(model, optimizer, scheduler, epoch=0, path='/content/model.pth'):
     torch.save({
@@ -277,7 +277,7 @@ def load_model(model, optimizer, scheduler):
 
 """# Make Predictions"""
 
-run.finish()
-
 if __name__ == '__main__':
     main()
+
+run.finish()
