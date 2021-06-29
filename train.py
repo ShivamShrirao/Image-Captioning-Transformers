@@ -38,7 +38,7 @@ parser.add_argument('--eps',               dest='eps',               default=1e-
 parser.add_argument('--seed',              dest='seed',              default=62134,      type=int,  metavar='', help='seed')
 parser.add_argument('--use_amp',           dest='use_amp',           default=True,       type=bool, metavar='', help='use mixed precision')
 parser.add_argument('--use_pe',            dest='use_pe',            default=True,       type=bool, metavar='', help='use positional encoding')
-parser.add_argument('--max_lr',            dest='max_lr',            default=5e-4,       type=float,metavar='', help='initial learning rate')
+parser.add_argument('--max_lr',            dest='max_lr',            default=1e-4,       type=float,metavar='', help='initial learning rate')
 parser.add_argument('--log_interval',      dest='log_interval',      default=10,         type=int,  metavar='', help='Log interval (default: 10)')
 
 args = parser.parse_args()

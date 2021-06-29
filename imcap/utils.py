@@ -35,7 +35,7 @@ class AverageMeter:
         self.reset()
 
     def reset(self):
-        self.sum = self.count = self.avg = self.val = 0
+        self.val = self.sum = self.count = self.avg = 0
 
     def update(self, val, n=1):
         self.val = val
