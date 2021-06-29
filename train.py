@@ -38,7 +38,7 @@ parser.add_argument('--eps',               dest='eps',               default=1e-
 parser.add_argument('--seed',              dest='seed',              default=62134,      type=int,  metavar='', help='seed')
 parser.add_argument('--use_amp',           dest='use_amp',           default=True,       type=bool, metavar='', help='use mixed precision')
 parser.add_argument('--use_pe',            dest='use_pe',            default=True,       type=bool, metavar='', help='use positional encoding')
-parser.add_argument('--max_lr',            dest='max_lr',            default=1e-4,       type=float,metavar='', help='initial learning rate')
+parser.add_argument('--max_lr',            dest='max_lr',            default=3e-4,       type=float,metavar='', help='initial learning rate')
 parser.add_argument('--log_interval',      dest='log_interval',      default=10,         type=int,  metavar='', help='Log interval (default: 10)')
 
 args = parser.parse_args()
@@ -116,8 +116,8 @@ model = CaptionModel(encoder = timm.create_model(CONFIG['encoder'], pretrained=T
 
 steps_per_epoch = len(train_loader)
 
-def lr_schedule(step, d_model=512, warmup_steps=2*steps_per_epoch):
-    return 1
+# def lr_schedule(step, d_model=512, warmup_steps=2*steps_per_epoch):
+#     return 1
     # step = max(1,step)
     # arg1 = step ** -0.5
     # arg2 = step * (warmup_steps ** -1.5)
@@ -132,8 +132,8 @@ optimizer = torch.optim.Adam(
     lr=CONFIG['max_lr'],
     betas=CONFIG['betas'], eps=CONFIG['eps']
 )
-# scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=CONFIG['max_lr'], total_steps=50*steps_per_epoch, pct_start=0.01, final_div_factor=0.31)
-scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_schedule)
+scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=CONFIG['max_lr'], total_steps=50*steps_per_epoch, pct_start=0.0)
+# scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_schedule)
 
 scaler = torch.cuda.amp.GradScaler(enabled=CONFIG['use_amp'])
 
