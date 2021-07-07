@@ -50,7 +50,7 @@ def ExternalSourcePipeline(batch_size, num_threads, device_id, external_data, in
     with pipe:
         images, labels = fn.external_source(source=external_data, num_outputs=2)
         if training:
-            images = fn.decoders.image_random_crop(images, device='mixed', output_type=types.RGB, num_attempts=100, memory_stats=True)
+            images = fn.decoders.image_random_crop(images, device='mixed', output_type=types.RGB, num_attempts=100)
             mirror = fn.random.coin_flip(probability=0.5)
         else:
             images = fn.decoders.image(images, device='mixed', output_type=types.RGB)

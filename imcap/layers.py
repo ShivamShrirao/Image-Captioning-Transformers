@@ -55,10 +55,10 @@ class ProjectionHead(nn.Module):
 
 class CaptionModel(nn.Module):
     def __init__(self, encoder, vocab_size, num_decoder_layers=6, nheads=8, d_model=512,
-                 dim_feedforward=2048, dp_rate=0.1, activation='relu', bn_eval=True):
+                 dim_feedforward=2048, dp_rate=0.1, activation='relu', freeze_w=True, bn_eval=True):
         super().__init__()
         self.encoder = encoder
-        freeze_weights(self.encoder)
+        if freeze_w: freeze_weights(self.encoder)
         if bn_eval: set_bn_eval(self.encoder)
         
         self.projection_head = ProjectionHead(d_model, dp_rate)

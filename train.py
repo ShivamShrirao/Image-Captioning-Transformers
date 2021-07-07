@@ -33,7 +33,7 @@ parser.add_argument('--nheads',            dest='nheads',            default=8, 
 parser.add_argument('--num_decoder_layers',dest='num_decoder_layers',default=6,          type=int,  metavar='', help='number of decoder layers')
 parser.add_argument('--dp_rate',           dest='dp_rate',           default=0.1,        type=float,metavar='', help='dropout rate')
 parser.add_argument('--activation',        dest='activation',        default='gelu',     type=str,  metavar='', help='activation function')
-parser.add_argument('--betas',             dest='betas',             default=[0.9, 0.98],type=float,metavar='', nargs='+', help='betas')
+parser.add_argument('--betas',             dest='betas',             default=[0.9, 0.98],type=float,metavar='', help='betas', nargs='+')
 parser.add_argument('--eps',               dest='eps',               default=1e-9,       type=float,metavar='', help='epsilon')
 parser.add_argument('--seed',              dest='seed',              default=62134,      type=int,  metavar='', help='seed')
 parser.add_argument('--use_amp',           dest='use_amp',           default=True,       type=bool, metavar='', help='use mixed precision')
@@ -48,8 +48,9 @@ print(args)
 DATA_DIR = args.pop('data-dir')
 CONFIG = args
 
-run = wandb.init(project="Image_Captioning_Transformer", entity="shivamshrirao", config=args)
-CONFIG = wandb.config
+if __name__ == '__main__':
+    run = wandb.init(project="Image_Captioning_Transformer", config=args)
+    CONFIG = wandb.config
 
 def seed_everything(seed=33):
     np.random.seed(seed)
@@ -135,9 +136,10 @@ optimizer = torch.optim.Adam(
 scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=CONFIG['max_lr'], total_steps=50*steps_per_epoch, pct_start=0.0)
 # scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_schedule)
 
-scaler = torch.cuda.amp.GradScaler(enabled=CONFIG['use_amp'])
+scaler = amp.GradScaler(enabled=CONFIG['use_amp'])
 
-wandb.watch(model, log=None)
+if __name__ == '__main__':
+    wandb.watch(model, log=None)
 
 """# Training functions"""
 
@@ -172,7 +174,6 @@ def train_epoch(model, train_loader, optimizer, scaler, scheduler, epoch=1, use_
             if not idx%log_interval:
                 curr_lr = optimizer.param_groups[0]['lr']
                 info = {'loss': float(losses.avg), 'lr': curr_lr}
-                losses.reset()
                 wandb.log(info)
                 pbar.set_postfix(info)
 
@@ -249,7 +250,7 @@ def main():
 
         img = Image.open(random.choice(val_paths))
         caps = generate_caption(model, preproc['val'](img)[None,:], en_vocab)
-        wandb.log({"val_loss": val_loss, "epoch": epoch, "predictions": wandb.Image(img, caption=caps)})
+        wandb.log({"train_loss": train_loss, "val_loss": val_loss, "epoch": epoch, "predictions": wandb.Image(img, caption=caps)})
         print(f"\nEpoch: {epoch}/{NUM_EPOCHS}, Train loss: {train_loss:.3f}, Val loss: {val_loss:.3f}\n")
         gc.collect()
         # if not epoch%10:
@@ -267,8 +268,8 @@ def save_model(model, optimizer, scheduler, epoch=0, path='/content/model.pth'):
                 'epoch': epoch,
                 }, path)
 
-def load_model(model, optimizer, scheduler):
-    checkpoint = torch.load('/content/model.pth', map_location=DEVICE)
+def load_model(model, optimizer, scheduler, path='/content/model.pth'):
+    checkpoint = torch.load(path, map_location=DEVICE)
     model.projection_head.load_state_dict(checkpoint['projection_head'])
     model.decoder.load_state_dict(checkpoint['decoder'])
     model.generator.load_state_dict(checkpoint['generator'])
@@ -279,5 +280,4 @@ def load_model(model, optimizer, scheduler):
 
 if __name__ == '__main__':
     main()
-
-run.finish()
+    run.finish()
